@@ -1,12 +1,40 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
+import { ref, computed } from "vue";
+import { defineStore } from "pinia";
 
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
-  }
+export const useReviewsStore = defineStore("reviews", {
+  state: () => ({
+    reviews: [],
+    editedData: {
+      editable: false,
+      item: null,
+    },
+  }),
+  actions: {
+    async addReview(review) {
+      const response = await fetch(`http://localhost:5000/reviews/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(review),
+      });
+      const newReview = await response.json();
+      console.log(newReview);
+      this.reviews = [newReview, ...this.reviews];
+    },
+  },
+  getters: {
+    averageRating(state) {
+      let temp =
+        state.reviews.reduce((acc, cur) => {
+          return acc + cur.rating;
+        }, 0) / state.reviews.length;
 
-  return { count, doubleCount, increment }
-})
+      temp = temp.toFixed(1).replace(/[.,]0$/, "");
+      return temp;
+    },
+    reviewsCount() {
+      return this.reviews.length;
+    },
+  },
+});

@@ -21,6 +21,9 @@
 import { ref } from "vue";
 import RatingSelect from "./RatingSelect.vue";
 import Card from "./Shared/Card.vue";
+import { useReviewsStore } from "../stores/reviews";
+
+const store = useReviewsStore();
 const text = ref("");
 const btnDisabled = ref(false);
 const message = ref("");
@@ -31,6 +34,7 @@ const handleSubmit = () => {
     text: text.value,
     rating: rating.value,
   };
+  store.addReview(newReview);
 };
 const setRating = (val) => {
   rating.value = val;
